@@ -32,6 +32,7 @@ NSString * kTLIndexPathUpdatesKey = @"kTLIndexPathUpdatesKey";
 @interface TLIndexPathController ()
 @property (strong, nonatomic) NSFetchedResultsController *backingController;
 @property (strong, nonatomic) TLIndexPathDataModel *oldDataModel;
+@property (strong, nonatomic) NSMutableArray *updatedObjects;
 @property (nonatomic) BOOL performingBatchUpdate;
 @property (nonatomic) BOOL pendingConvertFetchedObjectsToDataModel;
 @end
@@ -162,8 +163,8 @@ NSString * kTLIndexPathUpdatesKey = @"kTLIndexPathUpdatesKey";
             dataModel = [[TLIndexPathDataModel alloc] initWithItems:items];
         } else {
             dataModel = [[TLIndexPathDataModel alloc] initWithItems:items
-                                              sectionNameKeyPath:self.dataModel.sectionNameKeyPath
-                                               identifierKeyPath:self.dataModel.identifierKeyPath];
+                                                 sectionNameKeyPath:self.dataModel.sectionNameKeyPath
+                                                  identifierKeyPath:self.dataModel.identifierKeyPath];
         }
         self.dataModel = dataModel;
     }
@@ -202,6 +203,13 @@ NSString * kTLIndexPathUpdatesKey = @"kTLIndexPathUpdatesKey";
         }
     }
     TLIndexPathUpdates *updates = [[TLIndexPathUpdates alloc] initWithOldDataModel:self.oldDataModel updatedDataModel:self.dataModel];
+    
+	if (self.updatedObjects)
+	{
+		[updates addModifiedItems:self.updatedObjects];
+		self.updatedObjects = nil;
+	}
+    
     if ([self.delegate respondsToSelector:@selector(controller:didUpdateDataModel:)] && !self.ignoreDataModelChanges) {
         [self.delegate controller:self didUpdateDataModel:updates];
     }
@@ -285,6 +293,22 @@ NSString * kTLIndexPathUpdatesKey = @"kTLIndexPathUpdatesKey";
 }
 
 #pragma mark - NSFetchedResultsControllerDelegate
+- (void) controllerWillChangeContent:(NSFetchedResultsController *)controller
+{
+	self.updatedObjects = [NSMutableArray array];
+}
+
+- (void) controller:(NSFetchedResultsController *)controller
+	didChangeObject:(id)anObject
+		atIndexPath:(NSIndexPath *)indexPath
+	  forChangeType:(NSFetchedResultsChangeType)type
+	   newIndexPath:(NSIndexPath *)newIndexPath
+{
+	if (type == NSFetchedResultsChangeUpdate)
+	{
+		[self.updatedObjects addObject:anObject];
+	}
+}
 
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller
 {

@@ -46,7 +46,7 @@
         NSMutableArray *deletedItems = [[NSMutableArray alloc] init];
         NSMutableArray *movedItems = [[NSMutableArray alloc] init];
         NSMutableArray *modifiedItems = [[NSMutableArray alloc] init];
-
+        
         _insertedSectionNames = insertedSectionNames;
         _deletedSectionNames = deletedSectionNames;
         _movedSectionNames = movedSectionNames;
@@ -58,7 +58,7 @@
         NSOrderedSet *oldSectionNames = [NSOrderedSet orderedSetWithArray:oldDataModel.sectionNames];
         NSOrderedSet *updatedSectionNames = [NSOrderedSet orderedSetWithArray:updatedDataModel.sectionNames];
         
-        // Deleted and moved sections        
+        // Deleted and moved sections
         for (NSString *sectionName in oldSectionNames) {
             if ([updatedSectionNames containsObject:sectionName]) {
                 NSInteger oldSection = [oldDataModel sectionForSectionName:sectionName];
@@ -80,7 +80,7 @@
         }
         
         // Deleted and moved items
-        NSOrderedSet *oldItems = [NSOrderedSet orderedSetWithArray:[oldDataModel items]];        
+        NSOrderedSet *oldItems = [NSOrderedSet orderedSetWithArray:[oldDataModel items]];
         for (id item in oldItems) {
             NSIndexPath *oldIndexPath = [oldDataModel indexPathForItem:item];
             NSString *sectionName = [oldDataModel sectionNameForSection:oldIndexPath.section];
@@ -131,6 +131,21 @@
     return self;
 }
 
+- (void) addModifiedItems:(NSArray *)items
+{
+	NSMutableArray *updatedItems = [NSMutableArray array];
+	[updatedItems addObjectsFromArray:_modifiedItems];
+    
+	for (id item in items)
+	{
+		if (![_modifiedItems containsObject:item] && ![_insertedItems containsObject:item] && ![_movedItems containsObject:item])
+			[updatedItems addObject:item];
+	}
+    
+	_modifiedItems = updatedItems;
+}
+
+
 - (void)performBatchUpdatesOnTableView:(UITableView *)tableView withRowAnimation:(UITableViewRowAnimation)animation
 {
     [self performBatchUpdatesOnTableView:tableView withRowAnimation:animation completion:nil];
@@ -142,9 +157,9 @@
         [tableView reloadData];
         return;
     }
-
+    
     [CATransaction begin];
-
+    
     [CATransaction setCompletionBlock: ^{
         
         //modified items have to be reloaded after all other batch updates
@@ -157,16 +172,18 @@
             for (id item in self.modifiedItems) {
                 NSIndexPath *indexPath = [self.updatedDataModel indexPathForItem:item];
                 [indexPaths addObject:indexPath];
-                [tableView reloadRowsAtIndexPaths:indexPaths withRowAnimation:animation];
             }
-        }
+            
+			[tableView reloadRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationNone];
+            
+		}
         
         if (completion) {
             completion(YES);
         }
         
     }];
-
+    
     [tableView beginUpdates];
     
     if (self.insertedSectionNames.count) {
@@ -263,9 +280,9 @@
         }
         return;
     }
-
+    
     [collectionView performBatchUpdates:^{
-
+        
         if (self.insertedSectionNames.count) {
             NSMutableIndexSet *indexSet = [[NSMutableIndexSet alloc] init];
             for (NSString *sectionName in self.insertedSectionNames) {
