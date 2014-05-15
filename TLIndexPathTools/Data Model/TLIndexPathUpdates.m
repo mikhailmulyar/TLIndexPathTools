@@ -186,7 +186,6 @@
         }
         
         if (self.movedItems.count && self.updateModifiedItems) {
-            NSMutableArray *indexPaths = [[NSMutableArray alloc] init];
             for (id item in self.movedItems) {
                 NSIndexPath *indexPath = [self.updatedDataModel indexPathForItem:item];
                 [indexPaths addObject:indexPath];
@@ -368,7 +367,6 @@
         }
         
         if (self.movedItems.count && self.updateModifiedItems) {
-            NSMutableArray *indexPaths = [[NSMutableArray alloc] init];
             for (id item in self.movedItems) {
                 NSIndexPath *indexPath = [self.updatedDataModel indexPathForItem:item];
                 [indexPaths addObject:indexPath];
