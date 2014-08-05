@@ -257,7 +257,7 @@ NSString * kTLIndexPathUpdatesKey = @"kTLIndexPathUpdatesKey";
 
 - (NSArray *)coreDataFetchedObjects
 {
-    return self.backingController.fetchedObjects;
+    return [self.backingController.fetchedObjects copy];
 }
 
 - (void)setInMemoryPredicate:(NSPredicate *)inMemoryPredicate
