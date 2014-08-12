@@ -100,7 +100,14 @@
                         }
                         
 						if (![deletedSectionNames containsObject:sectionName])
-							[movedItems addObject:item];
+						{
+							if ([insertedSectionNames containsObject:updatedSectionName])
+							{
+								[deletedItems addObject:item];
+							}
+							else
+								[movedItems addObject:item];
+						}
 						else
 						{
 							[deletedItems addObject:item];
