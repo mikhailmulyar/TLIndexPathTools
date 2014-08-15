@@ -90,28 +90,26 @@
 				//can't rely on isEqual, so must use compare
                 if ([oldIndexPath compare:updatedIndexPath] != NSOrderedSame || ![updatedSectionName isEqualToString:sectionName]) {
                     // Don't move items in moved sections
-                    if (![movedSectionNames containsObject:sectionName]) {
+					if (![movedSectionNames containsObject:sectionName] || ![sectionName isEqualToString:updatedSectionName]) {
                         // TODO Not sure if this is correct when moves are combined with inserts and/or deletes
                         // Don't report as moved if the only change is the section
                         // has moved
-                        if (oldIndexPath.row == updatedIndexPath.row) {
-                            NSString *oldSectionName = [oldDataModel sectionNameForSection:oldIndexPath.section];
-                            if ([oldSectionName isEqualToString:updatedSectionName]) continue;
-                        }
-                        
+                        if (oldIndexPath.row == updatedIndexPath.row && [sectionName isEqualToString:updatedSectionName])
+							continue;
+
 						if (![deletedSectionNames containsObject:sectionName])
 						{
 							if ([insertedSectionNames containsObject:updatedSectionName])
 							{
 								[deletedItems addObject:item];
 							}
-							else
+							else if (![movedSectionNames containsObject:sectionName] || oldIndexPath.row != updatedIndexPath.row)
 								[movedItems addObject:item];
 						}
 						else
 						{
 							[deletedItems addObject:item];
-                            
+
 							if (![insertedSectionNames containsObject:updatedSectionName])
 								[insertedItems addObject:item];
 						}
@@ -124,7 +122,7 @@
                 }
             }
         }
-        
+		
         // Inserted and modified items
         NSOrderedSet *updatedItems = [NSOrderedSet orderedSetWithArray:[updatedDataModel items]];
         for (id item in updatedItems) {
