@@ -197,7 +197,8 @@
             }
         }
 
-        [tableView reloadRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationNone];
+        if (indexPaths.count)
+            [tableView reloadRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationNone];
 
         
         if (completion) {
