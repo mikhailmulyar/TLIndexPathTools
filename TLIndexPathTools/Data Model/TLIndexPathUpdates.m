@@ -150,11 +150,11 @@
 	NSMutableArray *updatedItems = [NSMutableArray array];
 	[updatedItems addObjectsFromArray:_modifiedItems];
     
-	for (id item in items)
-	{
-		if (![_modifiedItems containsObject:item] && ![_insertedItems containsObject:item] && ![_movedItems containsObject:item])
-			[updatedItems addObject:item];
-	}
+    for (id item in items)
+    {
+        if ([self.updatedDataModel.items containsObject:item] && ![_modifiedItems containsObject:item] && ![_insertedItems containsObject:item] && ![_movedItems containsObject:item])
+            [updatedItems addObject:item];
+    }
     
 	_modifiedItems = updatedItems;
 }
@@ -186,17 +186,21 @@
         if (self.modifiedItems.count && self.updateModifiedItems) {
             for (id item in self.modifiedItems) {
                 NSIndexPath *indexPath = [self.updatedDataModel indexPathForItem:item];
-                [indexPaths addObject:indexPath];
+                
+                if (indexPath)
+                    [indexPaths addObject:indexPath];
             }
         }
         
         if (self.movedItems.count && self.updateModifiedItems) {
             for (id item in self.movedItems) {
                 NSIndexPath *indexPath = [self.updatedDataModel indexPathForItem:item];
-                [indexPaths addObject:indexPath];
+                
+                if (indexPath)
+                    [indexPaths addObject:indexPath];
             }
         }
-
+        
         if (indexPaths.count)
             [tableView reloadRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationNone];
 
