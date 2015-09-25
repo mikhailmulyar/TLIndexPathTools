@@ -308,6 +308,11 @@ NSString * kTLIndexPathUpdatesKey = @"kTLIndexPathUpdatesKey";
 	{
 		[self.updatedObjects addObject:anObject];
 	}
+    
+    if (type == NSFetchedResultsChangeMove && [indexPath isEqual:newIndexPath])
+    {
+        [self.updatedObjects addObject:anObject];
+    }
 }
 
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller
